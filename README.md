@@ -50,19 +50,39 @@ O `requirements.txt` instala as dependências do app (`hidapi`, `pystray`, `Pill
 
 ## Uso
 
-Rodar na bandeja, sem janela de console:
+### Iniciar o app
 
-```bash
-pythonw battery_monitor.py
+Na pasta do projeto, rode:
+
+```powershell
+.venv\Scripts\pythonw.exe battery_monitor.py
 ```
 
-Fazer uma única leitura no terminal, útil para testar:
+O app abre **sem nenhuma janela**: ele aparece só como um ícone com a porcentagem na bandeja do sistema, perto do relógio. Se o ícone não aparecer, clique na setinha `^` da barra de tarefas, onde o Windows esconde os ícones extras. Arraste o ícone para a barra para deixá-lo sempre visível.
 
-```bash
-python battery_monitor.py --once
+Para fechar o app, clique com o botão direito no ícone e escolha **Sair**.
+
+> Use o `pythonw.exe` do `.venv`. O `pythonw` (com **w**) roda sem abrir a janela do terminal, e o do `.venv` é o que tem as dependências instaladas.
+
+### Testar a leitura no terminal
+
+Faz uma única leitura e mostra o resultado, sem abrir a bandeja:
+
+```powershell
+.venv\Scripts\python.exe battery_monitor.py --once
 ```
 
-Para iniciar junto com o Windows, crie um atalho para `pythonw.exe battery_monitor.py` (usando o Python do `.venv`) na pasta de inicialização. Para abrir essa pasta, pressione `Win + R` e digite `shell:startup`.
+A saída esperada é algo como `Reading(level=85, charging=False)`.
+
+### Iniciar junto com o Windows
+
+1. Pressione `Win + R`, digite `shell:startup` e confirme. Isso abre a pasta de inicialização.
+2. Clique com o botão direito na pasta e escolha **Novo > Atalho**.
+3. No local do item, informe os caminhos completos do `pythonw.exe` e do script, por exemplo:
+   ```
+   "C:\caminho\do\projeto\.venv\Scripts\pythonw.exe" "C:\caminho\do\projeto\battery_monitor.py"
+   ```
+4. Dê um nome ao atalho, por exemplo *Bateria MonsGeek*, e conclua.
 
 ### Onde ficam os dados
 
@@ -108,7 +128,7 @@ Os testes não precisam do teclado conectado: o acesso ao HID, à bandeja e ao r
 **O ícone mostra `?` (sem leitura).**
 - Confira se o receptor está conectado e se o teclado está no modo 2.4 GHz.
 - Depois de reconectar o receptor, pressione alguma tecla: o nível só aparece quando o teclado manda o primeiro valor.
-- Rode `python battery_monitor.py --once` para ver a leitura direto no terminal.
+- Rode `.venv\Scripts\python.exe battery_monitor.py --once` para ver a leitura direto no terminal.
 
 ## Licença
 
