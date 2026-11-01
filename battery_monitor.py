@@ -24,10 +24,15 @@ import webbrowser
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import hid
 import pystray
 from PIL import Image, ImageDraw, ImageFont
+
+if TYPE_CHECKING:
+    # pystray.Icon é escolhido em tempo de execução (backend do SO); para tipos, usa a base.
+    from pystray._base import Icon as TrayIcon
 
 # ---------------------------------------------------------------- config
 VENDOR_ID = 0x3151
@@ -255,7 +260,7 @@ class State:
     low_notified: bool = False
 
 
-def set_tray(icon: pystray.Icon, state: State, note: str = "") -> None:
+def set_tray(icon: "TrayIcon", state: State, note: str = "") -> None:
     icon.icon = make_icon(state.reading, stale=note != "")
     if state.reading is None:
         title = "MonsGeek: sem leitura"
@@ -270,7 +275,7 @@ def set_tray(icon: pystray.Icon, state: State, note: str = "") -> None:
     icon.title = title[:127]  # limite do tooltip no Windows
 
 
-def poll_once(icon: pystray.Icon, state: State) -> None:
+def poll_once(icon: "TrayIcon", state: State) -> None:
     reading = read_battery()
     if reading is None:
         set_tray(icon, state, "dongle ausente ou sem dados")
@@ -300,13 +305,13 @@ def main() -> None:
     wake = threading.Event()
     stop = threading.Event()
 
-    def refresh(_icon: pystray.Icon, _item: pystray.MenuItem) -> None:
+    def refresh(_icon: "TrayIcon", _item: pystray.MenuItem) -> None:
         wake.set()
 
-    def open_history(_icon: pystray.Icon, _item: pystray.MenuItem) -> None:
+    def open_history(_icon: "TrayIcon", _item: pystray.MenuItem) -> None:
         webbrowser.open(write_chart(state.history).as_uri())
 
-    def quit_app(icon: pystray.Icon, _item: pystray.MenuItem) -> None:
+    def quit_app(icon: "TrayIcon", _item: pystray.MenuItem) -> None:
         stop.set()
         wake.set()
         icon.stop()
@@ -331,7 +336,7 @@ def main() -> None:
             wake.wait(POLL_SECONDS)
             wake.clear()
 
-    def setup(icon: pystray.Icon) -> None:
+    def setup(icon: "TrayIcon") -> None:
         icon.visible = True
         threading.Thread(target=loop, daemon=True).start()
 
